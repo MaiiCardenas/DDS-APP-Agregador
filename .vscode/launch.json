@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<Agregador>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ar.edu.utn.dds.k3003.Application",
+            "projectName": "Agregador",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
