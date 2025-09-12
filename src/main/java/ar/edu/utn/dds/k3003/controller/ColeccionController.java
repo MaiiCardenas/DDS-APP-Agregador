@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.controller;
 
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.FachadaAgregador;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 
@@ -12,9 +13,9 @@ import java.util.List;
 @RequestMapping("/coleccion")
 public class ColeccionController {
 
-    private final FachadaAgregador fachadaAgregador;
+    private final Fachada fachadaAgregador;
 
-    public ColeccionController(FachadaAgregador fachadaAgregador) {
+    public ColeccionController(Fachada fachadaAgregador) {
         this.fachadaAgregador = fachadaAgregador;
     }
 

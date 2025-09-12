@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.controller;
 
 import java.util.List;
 
+import ar.edu.utn.dds.k3003.app.Fachada;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +13,9 @@ import ar.edu.utn.dds.k3003.facades.dtos.FuenteDTO;
 @RequestMapping("/fuentes")
 public class FuenteController {
 
-    private final FachadaAgregador fachadaAgregador;
+    private final Fachada fachadaAgregador;
 
-    public FuenteController(FachadaAgregador fachadaAgregador) {
+    public FuenteController(Fachada fachadaAgregador) {
         this.fachadaAgregador = fachadaAgregador;
     }
 

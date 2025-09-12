@@ -1,6 +1,8 @@
 package ar.edu.utn.dds.k3003.model;
 
 import java.time.LocalDateTime;
+
+import ar.edu.utn.dds.k3003.facades.dtos.ConsensosEnum;
 import lombok.Data;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -20,7 +22,9 @@ public class Coleccion {
 
   @Id
   private String nombre;
+  private ConsensosEnum consenso;
   private String descripcion;
   private LocalDateTime fechaModificacion;
+
 
 }

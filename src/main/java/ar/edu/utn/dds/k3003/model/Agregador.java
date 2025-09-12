@@ -29,11 +29,11 @@ public class Agregador {
         List<Hecho> hechos = new ArrayList<>();
 
         for (Fuente fuente : lista_fuentes) {
-            FachadaFuente fachada = fachadaFuentes.get(fuente.getId());
+            //FachadaFuente fachada = fachadaFuentes.get(fuente.getId());
 
-            if (fachada != null) {
+            if (fuente.getEndpoint() != null) {
                 try {
-                    List<HechoDTO> hechosDTO = fachada.buscarHechosXColeccion(nombreColeccion);
+                    List<HechoDTO> hechosDTO = fuente.obtenerHechos(nombreColeccion);
                     hechos.addAll(
                             hechosDTO.stream()
                                     .map(dto -> {

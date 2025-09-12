@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
+import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,13 +36,17 @@ public class Fuente {
     @OneToMany(mappedBy = "fuente", cascade = CascadeType.ALL)
     private List<Hecho> lista_hechos = new ArrayList<>();
 
-    public List<Hecho> obtenerHechos(String coleccionId) {
-        return lista_hechos;
+    @Transient
+    private ConexionHTTP conexionHTTP;
+
+    public List<HechoDTO> obtenerHechos(String coleccionId) {
+        return conexionHTTP.obtenerHechosPorColeccion(coleccionId);
     }
 
     public Fuente(String id, String nombre, String endpoint) {
         this.id = id;
         this.nombre = nombre;
         this.endpoint = endpoint;
+        this.conexionHTTP = new ConexionHTTP(endpoint);
     }
 }
