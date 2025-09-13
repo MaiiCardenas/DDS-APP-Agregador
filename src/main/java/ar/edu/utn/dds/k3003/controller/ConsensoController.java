@@ -18,14 +18,22 @@ public class ConsensoController {
     public ConsensoController(Fachada fachadaAgregador) {
         this.fachadaAgregador = fachadaAgregador;
     }
-
     @PatchMapping
     public ResponseEntity<Void> configurarConsenso(@RequestBody Map<String, String> body) {
-        ConsensosEnum consenso = ConsensosEnum.valueOf(body.get("tipo").toUpperCase());
+        String tipoStr = body.get("tipo");
         String coleccion = body.get("coleccion");
-
+        if (tipoStr == null || coleccion == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        ConsensosEnum consenso;
+        try {
+            consenso = ConsensosEnum.valueOf(tipoStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
         fachadaAgregador.setConsensoStrategy(consenso, coleccion);
         return ResponseEntity.noContent().build();
     }
+
 
 }

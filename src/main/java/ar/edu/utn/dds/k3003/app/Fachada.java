@@ -79,8 +79,7 @@ public class Fachada{
     agregador.agregarFachadaAFuente(fuenteId, fuente);
   }*/
 
-  public void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
-      throws InvalidParameterException {
+  public void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion){
     Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
     if(coleccion.isEmpty()){
       Coleccion nuevaColeccion = new Coleccion(nombreColeccion);
@@ -90,8 +89,7 @@ public class Fachada{
       Coleccion laColeccion = coleccion.get();
       laColeccion.setConsenso(tipoConsenso);
       coleccionRepository.save(laColeccion);
-    }
-  }
+    }}
 
 
   private HechoDTO convertirADTO(Hecho hecho) {
