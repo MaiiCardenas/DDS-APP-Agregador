@@ -12,24 +12,20 @@ import lombok.Data;
 @Data
 public class Agregador {
 
-    private List<Fuente> lista_fuentes = new ArrayList<>();
+    //private List<Fuente> lista_fuentes = new ArrayList<>();
     //private Map<String, FachadaFuente> fachadaFuentes = new HashMap<>();
     //private Map<String, ConsensosEnum> tipoConsensoXColeccion = new HashMap<>();
 
-    public Fuente agregarFuente(Fuente newFuente) {
-        lista_fuentes.add(newFuente);
-        return newFuente;
-    }
 
     public void configurarConsenso(ConsensosEnum consenso, String nombreColeccion) {
        // tipoConsensoXColeccion.put(nombreColeccion, consenso);
 
     }
 
-    private List<Hecho> obtenerHechosDeTodasLasFuentes(String nombreColeccion) {
+    private List<Hecho> obtenerHechosDeTodasLasFuentes(String nombreColeccion, List<Fuente> fuentes) {
         List<Hecho> hechos = new ArrayList<>();
 
-        for (Fuente fuente : lista_fuentes) {
+        for (Fuente fuente : fuentes) {
             //FachadaFuente fachada = fachadaFuentes.get(fuente.getId());
 
             if (fuente.getEndpoint() != null) {
@@ -51,10 +47,10 @@ public class Agregador {
         return hechos;
     }
 
-    public List<Hecho> obtenerHechosPorColeccion(String nombreColeccion, ConsensosEnum consenso) {
+    public List<Hecho> obtenerHechosPorColeccion(String nombreColeccion, ConsensosEnum consenso, List<Fuente> fuentes) {
 
         ConsensosEnum estrategia = consenso;
-        List<Hecho> hechos = obtenerHechosDeTodasLasFuentes(nombreColeccion);
+        List<Hecho> hechos = obtenerHechosDeTodasLasFuentes(nombreColeccion, fuentes);
         Map<String, Hecho> hechosUnicos = hechos.stream()
                 .collect(Collectors.toMap(
                         Hecho::getTitulo,
@@ -64,7 +60,7 @@ public class Agregador {
             case TODOS:
                 return new ArrayList<>(hechosUnicos.values());
             case AL_MENOS_2:
-                if (lista_fuentes.size() == 1) {
+                if (fuentes.size() == 1) {
                     return new ArrayList<>(hechosUnicos.values());
                 } else {
                     Set<String> titulos_Repetidos = hechos.stream()

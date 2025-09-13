@@ -46,7 +46,7 @@ public class Fachada{
     String id = UUID.randomUUID().toString();
     Fuente fuente = new Fuente(id, fuenteDto.nombre(), fuenteDto.endpoint());
     fuenteRepository.save(fuente);
-    return convertirAFuenteDTO(agregador.agregarFuente(fuente));
+    return convertirAFuenteDTO(fuente);
   }
 
   public List<FuenteDTO> fuentes() {
@@ -62,9 +62,9 @@ public class Fachada{
 
 
   public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException {
-    agregador.setLista_fuentes(fuenteRepository.findAll());
+    List<Fuente> listaFuentes = fuenteRepository.findAll();
     ConsensosEnum consenso = coleccionRepository.findById(nombreColeccion).get().getConsenso();
-    List<Hecho> hechosModelo = agregador.obtenerHechosPorColeccion(nombreColeccion, consenso);
+    List<Hecho> hechosModelo = agregador.obtenerHechosPorColeccion(nombreColeccion, consenso, listaFuentes);
 
     if (hechosModelo == null || hechosModelo.isEmpty()) {
       throw new NoSuchElementException("Busqueda no encontrada de: " + nombreColeccion);
