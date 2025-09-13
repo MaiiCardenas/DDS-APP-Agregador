@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "Fuente")
-@NoArgsConstructor
 public class Fuente {
     @Id
     @Column(name = "id", nullable = false, unique = true)
@@ -40,13 +39,16 @@ public class Fuente {
     private ConexionHTTP conexionHTTP;
 
     public List<HechoDTO> obtenerHechos(String coleccionId) {
-        return conexionHTTP.obtenerHechosPorColeccion(coleccionId);
+        return conexionHTTP.obtenerHechosPorColeccion(coleccionId, endpoint);
     }
 
     public Fuente(String id, String nombre, String endpoint) {
         this.id = id;
         this.nombre = nombre;
         this.endpoint = endpoint;
-        this.conexionHTTP = new ConexionHTTP(endpoint);
+    }
+
+    public Fuente() {
+        this.conexionHTTP = new ConexionHTTP();
     }
 }
