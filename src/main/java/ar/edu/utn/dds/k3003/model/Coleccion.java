@@ -19,4 +19,5 @@ public class Coleccion {
   private String nombre;
   private ConsensosEnum consenso;
 
+  public Coleccion(){}
 }
