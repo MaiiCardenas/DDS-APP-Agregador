@@ -28,5 +28,10 @@ public class FuenteController {
     public ResponseEntity<FuenteDTO> agregarFuente(@RequestBody FuenteDTO fuenteDTO) {
         return ResponseEntity.ok(fachadaAgregador.agregar(fuenteDTO));
     }
+    @DeleteMapping
+    public ResponseEntity<Void> borrarTodasLasFuentes() {
+        fachadaAgregador.borrarTodasLasFuentes();
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
 
 }

@@ -30,11 +30,6 @@ public class Fachada{
 
   private final ColeccionRepository coleccionRepository;
 
-  protected Fachada(ColeccionRepository coleccionRepository) {
-      this.coleccionRepository = coleccionRepository;
-      this.fuenteRepository = new InMemoryFuenteRepo();
-  }
-
   @Autowired
   public Fachada(JpaFuenteRepository fuenteRepo, JpaColeccionRepository coleccionRepo) {
     this.fuenteRepository = fuenteRepo;
@@ -99,5 +94,9 @@ public class Fachada{
   private FuenteDTO convertirAFuenteDTO(Fuente fuente) {
     return new FuenteDTO(fuente.getId(), fuente.getNombre(), fuente.getEndpoint());
   }
+  public void borrarTodasLasFuentes() {
+    fuenteRepository.deleteAll();
+  }
+
 
 }
