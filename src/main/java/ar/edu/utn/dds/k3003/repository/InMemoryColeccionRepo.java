@@ -26,7 +26,7 @@ public class InMemoryColeccionRepo implements ColeccionRepository {
     @Override
     public Coleccion save(Coleccion col) {
         this.colecciones.add(col);
-        col.setFechaModificacion(LocalDateTime.now());
+        //col.setFechaModificacion(LocalDateTime.now());
         return col;
     }
 
