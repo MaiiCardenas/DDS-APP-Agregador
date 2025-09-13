@@ -13,8 +13,8 @@ import lombok.Data;
 public class Agregador {
 
     private List<Fuente> lista_fuentes = new ArrayList<>();
-    private Map<String, FachadaFuente> fachadaFuentes = new HashMap<>();
-    private Map<String, ConsensosEnum> tipoConsensoXColeccion = new HashMap<>();
+    //private Map<String, FachadaFuente> fachadaFuentes = new HashMap<>();
+    //private Map<String, ConsensosEnum> tipoConsensoXColeccion = new HashMap<>();
 
     public Fuente agregarFuente(Fuente newFuente) {
         lista_fuentes.add(newFuente);
@@ -22,7 +22,8 @@ public class Agregador {
     }
 
     public void configurarConsenso(ConsensosEnum consenso, String nombreColeccion) {
-        tipoConsensoXColeccion.put(nombreColeccion, consenso);
+       // tipoConsensoXColeccion.put(nombreColeccion, consenso);
+
     }
 
     private List<Hecho> obtenerHechosDeTodasLasFuentes(String nombreColeccion) {
@@ -50,13 +51,9 @@ public class Agregador {
         return hechos;
     }
 
-    public List<Hecho> obtenerHechosPorColeccion(String nombreColeccion) {
+    public List<Hecho> obtenerHechosPorColeccion(String nombreColeccion, ConsensosEnum consenso) {
 
-        if (!tipoConsensoXColeccion.containsKey(nombreColeccion)) {
-            return Collections.emptyList();
-        }
-
-        ConsensosEnum estrategia = tipoConsensoXColeccion.get(nombreColeccion);
+        ConsensosEnum estrategia = consenso;
         List<Hecho> hechos = obtenerHechosDeTodasLasFuentes(nombreColeccion);
         Map<String, Hecho> hechosUnicos = hechos.stream()
                 .collect(Collectors.toMap(
@@ -88,7 +85,7 @@ public class Agregador {
         }
     }
 
-    public void agregarFachadaAFuente(String fuenteId, FachadaFuente fuente) {
+    /*public void agregarFachadaAFuente(String fuenteId, FachadaFuente fuente) {
         Fuente existe_Fuente = lista_fuentes.stream()
                 .filter(f -> f.getId().equals(fuenteId))
                 .findAny()
@@ -99,5 +96,5 @@ public class Agregador {
         }
         fachadaFuentes.put(fuenteId, fuente);
         existe_Fuente.setFachadaFuente(fuente);
-    }
+    }*/
 }

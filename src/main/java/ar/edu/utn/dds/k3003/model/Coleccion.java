@@ -11,11 +11,6 @@ import jakarta.persistence.Id;
 @Entity
 public class Coleccion {
 
-  public Coleccion(String nombre, String descripcion) {
-    this.nombre = nombre;
-    this.descripcion = descripcion;
-  }
-
   public Coleccion(String nombre) {
     this.nombre = nombre;
   }
@@ -23,8 +18,5 @@ public class Coleccion {
   @Id
   private String nombre;
   private ConsensosEnum consenso;
-  private String descripcion;
-  private LocalDateTime fechaModificacion;
-
 
 }

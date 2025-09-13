@@ -3,9 +3,12 @@ package ar.edu.utn.dds.k3003.app;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import ar.edu.utn.dds.k3003.model.Coleccion;
+import ar.edu.utn.dds.k3003.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,27 +20,28 @@ import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.model.Agregador;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.Hecho;
-import ar.edu.utn.dds.k3003.repository.FuenteRepository;
-import ar.edu.utn.dds.k3003.repository.InMemoryFuenteRepo;
-import ar.edu.utn.dds.k3003.repository.JpaFuenteRepository;
 
 @Service
-public class Fachada implements FachadaAgregador {
+public class Fachada{
 
   private Agregador agregador = new Agregador();
 
   private final FuenteRepository fuenteRepository;
 
-  protected Fachada() {
-    this.fuenteRepository = new InMemoryFuenteRepo();
+  private final ColeccionRepository coleccionRepository;
+
+  protected Fachada(ColeccionRepository coleccionRepository) {
+      this.coleccionRepository = coleccionRepository;
+      this.fuenteRepository = new InMemoryFuenteRepo();
   }
 
   @Autowired
-  public Fachada(JpaFuenteRepository fuenteRepository) {
-    this.fuenteRepository = fuenteRepository;
+  public Fachada(JpaFuenteRepository fuenteRepo, JpaColeccionRepository coleccionRepo) {
+    this.fuenteRepository = fuenteRepo;
+    this.coleccionRepository = coleccionRepo;
   }
 
-  @Override
+
   public FuenteDTO agregar(FuenteDTO fuenteDto) {
     String id = UUID.randomUUID().toString();
     Fuente fuente = new Fuente(id, fuenteDto.nombre(), fuenteDto.endpoint());
@@ -45,22 +49,22 @@ public class Fachada implements FachadaAgregador {
     return convertirAFuenteDTO(agregador.agregarFuente(fuente));
   }
 
-  @Override
   public List<FuenteDTO> fuentes() {
     return fuenteRepository.findAll().stream().map(this::convertirAFuenteDTO).collect(Collectors.toList());
   }
 
-  @Override
+
   public FuenteDTO buscarFuenteXId(String fuenteId) throws NoSuchElementException {
     return fuenteRepository.findById(fuenteId)
         .map(this::convertirAFuenteDTO)
         .orElseThrow(() -> new NoSuchElementException("Fuente no encontrada: " + fuenteId));
   }
 
-  @Override
+
   public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException {
     agregador.setLista_fuentes(fuenteRepository.findAll());
-    List<Hecho> hechosModelo = agregador.obtenerHechosPorColeccion(nombreColeccion);
+    ConsensosEnum consenso = coleccionRepository.findById(nombreColeccion).get().getConsenso();
+    List<Hecho> hechosModelo = agregador.obtenerHechosPorColeccion(nombreColeccion, consenso);
 
     if (hechosModelo == null || hechosModelo.isEmpty()) {
       throw new NoSuchElementException("Busqueda no encontrada de: " + nombreColeccion);
@@ -70,16 +74,25 @@ public class Fachada implements FachadaAgregador {
         .collect(Collectors.toList());
   }
 
-  @Override
-  public void addFachadaFuentes(String fuenteId, FachadaFuente fuente) {
-    agregador.agregarFachadaAFuente(fuenteId, fuente);
-  }
 
-  @Override
+  /*public void addFachadaFuentes(String fuenteId, FachadaFuente fuente) {
+    agregador.agregarFachadaAFuente(fuenteId, fuente);
+  }*/
+
   public void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
       throws InvalidParameterException {
-    agregador.configurarConsenso(tipoConsenso, nombreColeccion);
+    Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
+    if(coleccion.isEmpty()){
+      Coleccion nuevaColeccion = new Coleccion(nombreColeccion);
+      nuevaColeccion.setConsenso(tipoConsenso);
+      coleccionRepository.save(nuevaColeccion);
+    }else{
+      Coleccion laColeccion = coleccion.get();
+      laColeccion.setConsenso(tipoConsenso);
+      coleccionRepository.save(laColeccion);
+    }
   }
+
 
   private HechoDTO convertirADTO(Hecho hecho) {
     return new HechoDTO(hecho.getId(), hecho.getColeccionNombre(), hecho.getTitulo());
