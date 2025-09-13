@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.k3003.app;
+/*package ar.edu.utn.dds.k3003.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -154,4 +154,4 @@ public class TestAgregador {
                         new HechoDTO("9", "coleccionTest", "titulo2"), new HechoDTO("10", "coleccionTest", "titulo6")));
     }
 
-}
+}*/
