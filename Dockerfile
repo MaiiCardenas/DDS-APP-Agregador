@@ -1,5 +1,5 @@
 # Etapa de build (Maven actualizado para estabilidad en Render)
-FROM maven:3.9.9-openjdk-17 AS build
+FROM maven:3.9-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests  # Extrae newrelic.jar y newrelic.yml a target/
