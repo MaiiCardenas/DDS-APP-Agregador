@@ -31,10 +31,4 @@ ENV NEW_RELIC_APP_NAME="Agregador API"
 EXPOSE 8080
 
 # ENTRYPOINT: Java Agent para APM + CLI maneja logs/infrastructure
-ENTRYPOINT ["java", \
-    "-javaagent:/app/newrelic.jar", \
-    "-Dnewrelic.config.file=/app/newrelic.yml", \
-    "-Dnewrelic.license.key=${NEW_RELIC_LICENSE_KEY}", \
-    "-Dnewrelic.app.name=${NEW_RELIC_APP_NAME}", \
-    "-Dnewrelic.log_file_name=STDOUT", \  # Logs de app a stdout para CLI
-    "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/newrelic.jar", "-Dnewrelic.config.file=/app/newrelic.yml", "-Dnewrelic.license.key=${NEW_RELIC_LICENSE_KEY}", "-Dnewrelic.app.name=${NEW_RELIC_APP_NAME}", "-Dnewrelic.log_file_name=STDOUT", "-jar", "app.jar"]
