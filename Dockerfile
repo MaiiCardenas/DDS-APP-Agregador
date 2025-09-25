@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests  # Extrae newrelic.jar y newrelic.yml a target/
 
 # Etapa de runtime ((Eclipse Temurin como alternativa a OpenJDK para evitar rate limits)
-FROM eclipse-temurin:17-jdk
+FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Instala dependencias básicas para el CLI (curl, bash ya están en slim)
