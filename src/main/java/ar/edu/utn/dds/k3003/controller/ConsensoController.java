@@ -1,8 +1,7 @@
 package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
-import ar.edu.utn.dds.k3003.facades.FachadaAgregador;
-import ar.edu.utn.dds.k3003.facades.dtos.ConsensosEnum;
+import ar.edu.utn.dds.k3003.model.consensos.ConsensoEnum;
 
 import java.util.Map;
 
@@ -25,9 +24,9 @@ public class ConsensoController {
         if (tipoStr == null || coleccion == null) {
             return ResponseEntity.badRequest().build();
         }
-        ConsensosEnum consenso;
+        ConsensoEnum consenso;
         try {
-            consenso = ConsensosEnum.valueOf(tipoStr.toUpperCase());
+            consenso = ConsensoEnum.valueOf(tipoStr.toUpperCase());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
