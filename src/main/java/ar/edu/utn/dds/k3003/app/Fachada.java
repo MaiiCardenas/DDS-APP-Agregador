@@ -9,6 +9,7 @@ import ar.edu.utn.dds.k3003.model.consensos.ConsensoAlMenosDos;
 import ar.edu.utn.dds.k3003.model.consensos.ConsensoEstricto;
 import ar.edu.utn.dds.k3003.model.consensos.ConsensoTodos;
 import ar.edu.utn.dds.k3003.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,17 +67,40 @@ public class Fachada{
         .collect(Collectors.toList());
   }
 
-  public void setConsensoStrategy(ConsensoEnum tipoConsenso, String nombreColeccion){
-    Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
-    Coleccion laColeccion;
-    if(coleccion.isEmpty()){
-      laColeccion = new Coleccion(nombreColeccion);
-    }else {
-      laColeccion = coleccion.get();
+
+  @Transactional  // Asegura atomicidad: findById y save en una transacción
+  public void setConsensoStrategy(ConsensoEnum tipoConsenso, String nombreColeccion) {
+    // Validaciones iniciales para evitar nulls y datos inválidos
+    if (tipoConsenso == null) {
+      throw new IllegalArgumentException("tipoConsenso no puede ser null");
     }
-    laColeccion.setEnumConsenso(tipoConsenso);
-    coleccionRepository.save(laColeccion);
+    if (nombreColeccion == null || nombreColeccion.trim().isEmpty()) {
+      throw new IllegalArgumentException("nombreColeccion no puede ser null o vacío");
+    }
+
+    try {
+      Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
+      Coleccion laColeccion;
+
+      if (coleccion.isEmpty()) {
+        // Crea nuevo (INSERT)
+        laColeccion = new Coleccion(nombreColeccion);
+        // Si necesitas inicializar más campos: laColeccion.setOtroCampo(valorDefault);
+      } else {
+        // Usa existente (UPDATE)
+        laColeccion = coleccion.get();
+
+      }
+      laColeccion.setEnumConsenso(tipoConsenso);
+      coleccionRepository.save(laColeccion);
+    } catch (IllegalArgumentException e) {
+      throw e;
+    } catch (Exception e) {
+      // Captura errores de BD, JPA, etc. (ej. DataIntegrityViolationException)
+      throw new RuntimeException("Error configurando consenso strategy para " + nombreColeccion + ": " + e.getMessage(), e);
+    }
   }
+
 
   private HechoDTO convertirADTO(Hecho hecho) {
     return new HechoDTO(hecho.getId(), hecho.getColeccionNombre(), hecho.getTitulo());
