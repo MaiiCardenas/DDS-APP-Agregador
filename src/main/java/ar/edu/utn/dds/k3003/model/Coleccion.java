@@ -18,11 +18,15 @@ public class Coleccion {
     this.nombre = nombre;
   }
 
+
   @Id
   private String nombre;
   private ConsensoEnum enumConsenso;
   @Transient
   private Consenso consenso;
+
+  public Coleccion() {
+  }
 
   public List<Hecho> obtenerHechos(List<Fuente> fuentes){
     Unificador unificador = new Unificador();
