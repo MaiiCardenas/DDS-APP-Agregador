@@ -1,30 +1,27 @@
 package ar.edu.utn.dds.k3003.app;
 
-import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ar.edu.utn.dds.k3003.model.Coleccion;
+import ar.edu.utn.dds.k3003.model.consensos.ConsensoAlMenosDos;
+import ar.edu.utn.dds.k3003.model.consensos.ConsensoEstricto;
+import ar.edu.utn.dds.k3003.model.consensos.ConsensoTodos;
 import ar.edu.utn.dds.k3003.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ar.edu.utn.dds.k3003.facades.FachadaAgregador;
-import ar.edu.utn.dds.k3003.facades.FachadaFuente;
-import ar.edu.utn.dds.k3003.facades.dtos.ConsensosEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.FuenteDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
-import ar.edu.utn.dds.k3003.model.Agregador;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.Hecho;
+import ar.edu.utn.dds.k3003.model.consensos.ConsensoEnum;
+
 
 @Service
 public class Fachada{
 
-  private Agregador agregador = new Agregador();
 
   private final FuenteRepository fuenteRepository;
 
@@ -58,8 +55,8 @@ public class Fachada{
 
   public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException {
     List<Fuente> listaFuentes = fuenteRepository.findAll();
-    ConsensosEnum consenso = coleccionRepository.findById(nombreColeccion).get().getConsenso();
-    List<Hecho> hechosModelo = agregador.obtenerHechosPorColeccion(nombreColeccion, consenso, listaFuentes);
+    List<Hecho> hechosModelo = coleccionRepository.findById(nombreColeccion).get()
+            .obtenerHechos(listaFuentes);
 
     if (hechosModelo == null || hechosModelo.isEmpty()) {
       throw new NoSuchElementException("Busqueda no encontrada de: " + nombreColeccion);
@@ -69,23 +66,15 @@ public class Fachada{
         .collect(Collectors.toList());
   }
 
-
-  /*public void addFachadaFuentes(String fuenteId, FachadaFuente fuente) {
-    agregador.agregarFachadaAFuente(fuenteId, fuente);
-  }*/
-
-  public void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion){
+  public void setConsensoStrategy(ConsensoEnum tipoConsenso, String nombreColeccion){
     Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
-    if(coleccion.isEmpty()){
-      Coleccion nuevaColeccion = new Coleccion(nombreColeccion);
-      nuevaColeccion.setConsenso(tipoConsenso);
-      coleccionRepository.save(nuevaColeccion);
-    }else{
-      Coleccion laColeccion = coleccion.get();
-      laColeccion.setConsenso(tipoConsenso);
-      coleccionRepository.save(laColeccion);
-    }}
-
+    Coleccion laColeccion = coleccion.get();
+    switch (tipoConsenso){
+      case AL_MENOS_2 -> laColeccion.setConsenso(new ConsensoAlMenosDos());
+      case TODOS -> laColeccion.setConsenso(new ConsensoTodos());
+      case ESTRICTO -> laColeccion.setConsenso(new ConsensoEstricto());
+    }
+  }
 
   private HechoDTO convertirADTO(Hecho hecho) {
     return new HechoDTO(hecho.getId(), hecho.getColeccionNombre(), hecho.getTitulo());

@@ -1,8 +1,8 @@
 package ar.edu.utn.dds.k3003.model;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-import ar.edu.utn.dds.k3003.facades.dtos.ConsensosEnum;
+import ar.edu.utn.dds.k3003.model.consensos.Consenso;
 import lombok.Data;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +17,9 @@ public class Coleccion {
 
   @Id
   private String nombre;
-  private ConsensosEnum consenso;
+  private Consenso consenso;
 
-  public Coleccion(){}
+  public List<Hecho> obtenerHechos(List<Fuente> fuentes){
+    return this.consenso.obtenerHechos(fuentes, this.nombre);
+  }
 }
