@@ -111,6 +111,7 @@ public class Fachada{
   }
   public void borrarTodasLasFuentes() {
     fuenteRepository.deleteAll();
+    coleccionRepository.deleteAll();
   }
 
 

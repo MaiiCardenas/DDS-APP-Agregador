@@ -13,4 +13,6 @@ public interface ColeccionRepository {
 
   List<Coleccion> findAll();
 
+  void deleteAll();
+
 }
