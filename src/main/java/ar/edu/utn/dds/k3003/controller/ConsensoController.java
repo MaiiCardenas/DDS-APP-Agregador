@@ -34,5 +34,10 @@ public class ConsensoController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/cron")
+    public ResponseEntity<Void> cron(){
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
