@@ -4,17 +4,25 @@ import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.Hecho;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+@Entity
 public class ConsensoEstricto implements Consenso{
-    private Unificador unificador = new Unificador();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    public ConsensoEstricto() {}
     @Override
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion) {
+        Unificador unificador = new Unificador();
         List<Hecho> hechos = unificador.unificarHechos(coleccion, fuentes);
         List<Hecho> hechosBuenos = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
