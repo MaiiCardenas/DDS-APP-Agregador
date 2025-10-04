@@ -13,12 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-@Entity
+
 public class ConsensoAlMenosDos implements Consenso{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    // Constructor vacío requerido por JPA
+
     public ConsensoAlMenosDos() {}
     @Override
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion) {

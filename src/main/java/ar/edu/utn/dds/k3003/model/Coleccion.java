@@ -3,6 +3,9 @@ package ar.edu.utn.dds.k3003.model;
 import java.util.List;
 
 import ar.edu.utn.dds.k3003.model.consensos.Consenso;
+import ar.edu.utn.dds.k3003.model.consensos.ConsensoEnum;
+import ar.edu.utn.dds.k3003.model.consensos.Unificador;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,9 +20,13 @@ public class Coleccion {
 
   @Id
   private String nombre;
+  private ConsensoEnum enumConsenso;
+  @Transient
   private Consenso consenso;
 
   public List<Hecho> obtenerHechos(List<Fuente> fuentes){
+    Unificador unificador = new Unificador();
+    this.consenso = unificador.miConsenso(enumConsenso);
     return this.consenso.obtenerHechos(fuentes, this.nombre);
   }
 }

@@ -17,6 +17,14 @@ public class Unificador {
     public Unificador() {
     }
 
+    public Consenso miConsenso(ConsensoEnum consenso){
+        switch (consenso){
+            case ESTRICTO -> {return new ConsensoEstricto();}
+            case TODOS -> {return new ConsensoTodos();}
+            default -> {return new ConsensoAlMenosDos();}
+        }
+    }
+
     public List<Hecho> unificarHechos(String nombreColeccion, List<Fuente> fuentes) {
         List<Hecho> hechos = this.todosLosHechos(nombreColeccion, fuentes);
         Map<String, Hecho> hechosUnicos = hechos.stream()

@@ -14,11 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-@Entity
+
 public class ConsensoEstricto implements Consenso{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
     public ConsensoEstricto() {}
     @Override
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion) {
