@@ -46,6 +46,9 @@ public class Hecho {
         this.coleccionNombre = coleccion;
     }
 
+    public Hecho() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
