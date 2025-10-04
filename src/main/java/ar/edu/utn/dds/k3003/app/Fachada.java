@@ -68,8 +68,14 @@ public class Fachada{
 
   public void setConsensoStrategy(ConsensoEnum tipoConsenso, String nombreColeccion){
     Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
-    Coleccion laColeccion = coleccion.get();
+    Coleccion laColeccion;
+    if(coleccion.isEmpty()){
+      laColeccion = new Coleccion(nombreColeccion);
+    }else {
+      laColeccion = coleccion.get();
+    }
     laColeccion.setEnumConsenso(tipoConsenso);
+    coleccionRepository.save(laColeccion);
   }
 
   private HechoDTO convertirADTO(Hecho hecho) {
