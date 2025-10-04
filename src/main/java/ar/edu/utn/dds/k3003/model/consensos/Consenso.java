@@ -9,5 +9,5 @@ import java.util.List;
  * Interfaz Consenso: Define el contrato para obtener hechos con un consenso determinado.
  */
 public interface Consenso {
-    List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion);
+    public List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion);
 }

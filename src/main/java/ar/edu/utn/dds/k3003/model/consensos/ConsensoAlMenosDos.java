@@ -3,12 +3,34 @@ package ar.edu.utn.dds.k3003.model.consensos;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.Hecho;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ConsensoAlMenosDos implements Consenso{
-
+    private Unificador unificador = new Unificador();
     @Override
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion) {
-        return null;
+        if (fuentes.size() == 1) {
+            return unificador.unificarHechos(coleccion, fuentes);
+        } else {
+            List<Hecho> hechos = unificador.todosLosHechos(coleccion, fuentes);
+            Set<String> titulos_Repetidos = hechos.stream()
+                    .collect(Collectors.groupingBy(Hecho::getTitulo,
+                            Collectors.mapping(Hecho::getOrigen, Collectors.toSet())))
+                    .entrySet().stream()
+                    .filter(e -> e.getValue().size() >= 2)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toSet());
+            return hechos.stream().filter(h -> titulos_Repetidos.contains(h.getTitulo()))
+                    .collect(Collectors.toMap(
+                            Hecho::getTitulo, Function.identity(),
+                            (h1, h2) -> h1))
+                    .values().stream().collect(Collectors.toList());
+        }
     }
+
 }

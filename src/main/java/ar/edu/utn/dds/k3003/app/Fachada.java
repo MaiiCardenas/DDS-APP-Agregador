@@ -1,10 +1,7 @@
 package ar.edu.utn.dds.k3003.app;
 
-import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ar.edu.utn.dds.k3003.model.Coleccion;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.utn.dds.k3003.facades.dtos.FuenteDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
-import ar.edu.utn.dds.k3003.model.Agregador;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.model.consensos.ConsensoEnum;
@@ -26,7 +22,6 @@ import ar.edu.utn.dds.k3003.model.consensos.ConsensoEnum;
 @Service
 public class Fachada{
 
-  private Agregador agregador = new Agregador();
 
   private final FuenteRepository fuenteRepository;
 
@@ -71,11 +66,6 @@ public class Fachada{
         .collect(Collectors.toList());
   }
 
-
-  /*public void addFachadaFuentes(String fuenteId, FachadaFuente fuente) {
-    agregador.agregarFachadaAFuente(fuenteId, fuente);
-  }*/
-
   public void setConsensoStrategy(ConsensoEnum tipoConsenso, String nombreColeccion){
     Optional<Coleccion> coleccion = coleccionRepository.findById(nombreColeccion);
     Coleccion laColeccion = coleccion.get();
@@ -85,15 +75,6 @@ public class Fachada{
       case ESTRICTO -> laColeccion.setConsenso(new ConsensoEstricto());
     }
   }
-    /*if(coleccion.isEmpty()){
-      Coleccion nuevaColeccion = new Coleccion(nombreColeccion);
-      nuevaColeccion.setConsenso(new// unConsenso());
-      coleccionRepository.save(nuevaColeccion);
-    }else{
-      Coleccion laColeccion = coleccion.get();
-      laColeccion.setConsenso(tipoConsenso);
-      coleccionRepository.save(laColeccion);
-    }}*/
 
   private HechoDTO convertirADTO(Hecho hecho) {
     return new HechoDTO(hecho.getId(), hecho.getColeccionNombre(), hecho.getTitulo());
