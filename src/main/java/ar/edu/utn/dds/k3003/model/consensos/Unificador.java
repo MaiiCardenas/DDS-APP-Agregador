@@ -1,6 +1,6 @@
 package ar.edu.utn.dds.k3003.model.consensos;
 
-import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.model.DTO.HechoDTO;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.Hecho;
 
@@ -44,7 +44,7 @@ public class Unificador {
                     hechos.addAll(
                             hechosDTO.stream()
                                     .map(dto -> {
-                                        Hecho hecho = new Hecho(dto.titulo(), dto.id(), dto.nombreColeccion());
+                                        Hecho hecho = new Hecho(dto.getTitulo(), dto.getId(), dto.getNombreColeccion());
                                         hecho.setOrigen(fuente.getId());
                                         return hecho;
                                     }).toList());
