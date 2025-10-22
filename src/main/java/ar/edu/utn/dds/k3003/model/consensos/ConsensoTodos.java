@@ -10,9 +10,10 @@ import java.util.stream.Collectors;
 
 public class ConsensoTodos implements Consenso{
 
-    private Unificador unificador = new Unificador();
+    Unificador unificador = new Unificador();
     @Override
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, String coleccion) {
+        Unificador unificador = new Unificador();
 
         return unificador.unificarHechos(coleccion, fuentes);
     }
