@@ -3,6 +3,8 @@ package ar.edu.utn.dds.k3003.model;
 import ar.edu.utn.dds.k3003.model.DTO.HechoDTO;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ConexionHTTP {
+    private static final Logger logger = LoggerFactory.getLogger(ConexionHTTP.class);
 
     private RestTemplate restTemplate;
 
@@ -22,6 +25,7 @@ public class ConexionHTTP {
 
     public List<HechoDTO> obtenerHechosPorColeccion(String nombreColeccion, String endpoint) {
         String url = endpoint + "/colecciones/" + nombreColeccion + "/hechos";
+        logger.info("Solicitando la coleccion {} a la API-FUENTE", nombreColeccion);
         ResponseEntity<HechoDTO[]> response = restTemplate.getForEntity(url, HechoDTO[].class);
         HechoDTO[] hechosArray = response.getBody();
         if (hechosArray == null) {

@@ -9,15 +9,21 @@ import java.util.List;
 
 //@JsonPropertyOrder({ "id", "nombre_coleccion", "titulo", "etiquetas", "categoria","ubicacion","fecha","origen" })
 public class HechoDTO {
+    @JsonProperty("id")
     private String id;
-
     @JsonProperty("nombre_coleccion")
     private String nombreColeccion;
+    @JsonProperty("titulo")
     private String titulo;
+    @JsonProperty("etiquetas")
     private List<String> etiquetas;
+    @JsonProperty("categoria")
     private CategoriaHechoEnum categoria;
+    @JsonProperty("ubicacion")
     private String ubicacion;
+    @JsonProperty("fecha")
     private LocalDateTime fecha;
+    @JsonProperty("origen")
     private String origen;
 
     public HechoDTO() {
