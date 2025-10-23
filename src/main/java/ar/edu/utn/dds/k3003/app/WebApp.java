@@ -11,8 +11,4 @@ public class WebApp {
         SpringApplication.run(WebApp.class, args);
     }
 
-    @Bean
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
-    }
 }
