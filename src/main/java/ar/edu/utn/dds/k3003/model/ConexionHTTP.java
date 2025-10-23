@@ -48,9 +48,8 @@ public class ConexionHTTP {
             }
             logger.info("Obtenidos {} hechos de la colección: {}", hechos.size(), nombreColeccion);
             return hechos;
-        } catch (RestClientException e) {
-            logger.error("Error al consumir la API {}: {}", url, e.getMessage());
-            return List.of();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al consumir la API" + url +"Con error:" + e.getMessage(), e);
         }
     }
 }

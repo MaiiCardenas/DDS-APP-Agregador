@@ -33,6 +33,11 @@ public class HechoDTO {
         this.id = id;
         this.nombreColeccion = nombreColeccion;
         this.titulo = titulo;
+        this.categoria = null;
+        this.fecha = null;
+        this.origen = null;
+        this.ubicacion = null;
+        this.etiquetas = null;
     }
 
     public HechoDTO(String id, String nombreColeccion, String titulo, List<String> etiquetas, CategoriaHechoEnum categoria, String ubicacion, LocalDateTime fecha, String origen) {
