@@ -6,11 +6,13 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -23,19 +25,33 @@ public class ConexionHTTP {
     private RestTemplate restTemplate;
 
     public ConexionHTTP() {
-        //this.restTemplate = new RestTemplate();
     }
 
     public List<HechoDTO> obtenerHechosPorColeccion(String nombreColeccion, String endpoint) {
-        String url = endpoint + "/colecciones/" + nombreColeccion + "/hechos";
-        logger.info("Solicitando la coleccion {} a la API-FUENTE", nombreColeccion);
-        ResponseEntity<HechoDTO[]> response = restTemplate.getForEntity(url, HechoDTO[].class);
-        logger.info("Respuesta de restTemplate: {}",response.getBody());
-        HechoDTO[] hechosArray = response.getBody();
-        if (hechosArray == null) {
+        if (endpoint == null || endpoint.isEmpty() || nombreColeccion == null || nombreColeccion.isEmpty()) {
+            logger.warn("Endpoint o nombre de colección inválido");
             return List.of();
         }
-        return Arrays.asList(hechosArray);
+        String url = endpoint + "/colecciones/" + nombreColeccion + "/hechos";
+        logger.info("Solicitando la colección {} a la API-FUENTE: {}", nombreColeccion, url);
+        try {
+            ResponseEntity<List<HechoDTO>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,  // Agrega HttpEntity si necesitas headers (ej. autenticación)
+                    new ParameterizedTypeReference<List<HechoDTO>>() {}
+            );
+            List<HechoDTO> hechos = response.getBody();
+            if (hechos == null) {
+                logger.warn("Respuesta de la API es nula para: {}", url);
+                return List.of();
+            }
+            logger.info("Obtenidos {} hechos de la colección: {}", hechos.size(), nombreColeccion);
+            return hechos;
+        } catch (RestClientException e) {
+            logger.error("Error al consumir la API {}: {}", url, e.getMessage());
+            return List.of();
+        }
     }
 }
 

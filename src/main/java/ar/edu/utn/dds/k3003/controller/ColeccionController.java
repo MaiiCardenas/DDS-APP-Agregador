@@ -4,6 +4,8 @@ import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.FachadaAgregador;
 import ar.edu.utn.dds.k3003.model.DTO.HechoDTO;
 
+import io.javalin.http.OkResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,7 @@ public class ColeccionController {
 
     @GetMapping("/{nombre}/hechos")
     public ResponseEntity<List<HechoDTO>> listarHechosPorColeccion(@PathVariable String nombre) {
-        return ResponseEntity.ok(fachadaAgregador.hechos(nombre));
+        return new ResponseEntity<>(fachadaAgregador.hechos(nombre), HttpStatus.OK);
     }
 
 }
