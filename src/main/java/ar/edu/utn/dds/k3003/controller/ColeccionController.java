@@ -23,11 +23,11 @@ public class ColeccionController {
 
     @GetMapping("/{nombre}/hechos")
     public ResponseEntity<List<HechoDTO>> listarHechosPorColeccion(@PathVariable String nombre) {
-        return new ResponseEntity<>(fachadaAgregador.hechos(nombre), HttpStatus.OK);
+        return new ResponseEntity<List<HechoDTO>>(fachadaAgregador.hechos(nombre), HttpStatus.OK);
     }
     @PostMapping("/{nombre}")
     public ResponseEntity<String> postColeccion(@PathVariable String nombre){
-        return new ResponseEntity<>(fachadaAgregador.nuevaColeccion(nombre),HttpStatus.ACCEPTED);
+        return new ResponseEntity<String>(fachadaAgregador.nuevaColeccion(nombre),HttpStatus.OK);
     }
 
 }
