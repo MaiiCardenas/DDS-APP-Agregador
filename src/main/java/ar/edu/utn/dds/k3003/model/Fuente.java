@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.client.RestTemplate;
 
 @Data
 @Entity
@@ -49,6 +50,6 @@ public class Fuente {
     }
 
     public Fuente() {
-        this.conexionHTTP = new ConexionHTTP();
+        this.conexionHTTP = new ConexionHTTP(new RestTemplate());
     }
 }
