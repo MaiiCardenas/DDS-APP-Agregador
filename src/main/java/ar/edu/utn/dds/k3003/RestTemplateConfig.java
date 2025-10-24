@@ -16,8 +16,8 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         // Timeouts en HttpClient 5.x
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(Timeout.ofSeconds(60))      // timeout al conectar
-                .setResponseTimeout(Timeout.ofSeconds(60))    // timeout esperando la respuesta
+                .setConnectTimeout(Timeout.ofSeconds(5))      // timeout al conectar
+                .setResponseTimeout(Timeout.ofSeconds(10))    // timeout esperando la respuesta
                 .build();
 
         // Cliente HTTP con la config de timeouts
