@@ -25,5 +25,9 @@ public class ColeccionController {
     public ResponseEntity<List<HechoDTO>> listarHechosPorColeccion(@PathVariable String nombre) {
         return new ResponseEntity<>(fachadaAgregador.hechos(nombre), HttpStatus.OK);
     }
+    @PostMapping("/{nombre}")
+    public ResponseEntity<String> postColeccion(@PathVariable String nombre){
+        return new ResponseEntity<>(fachadaAgregador.nuevaColeccion(nombre),HttpStatus.ACCEPTED);
+    }
 
 }

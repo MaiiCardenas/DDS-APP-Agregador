@@ -42,6 +42,13 @@ public class Fachada{
     return convertirAFuenteDTO(fuente);
   }
 
+  public String nuevaColeccion(String nombre){
+    Coleccion cole = new Coleccion(nombre);
+    cole.setEnumConsenso(ConsensoEnum.TODOS);
+    coleccionRepository.save(cole);
+    return "Agregada la nueva coleccion:" + nombre;
+  }
+
   public List<FuenteDTO> fuentes() {
     return fuenteRepository.findAll().stream().map(this::convertirAFuenteDTO).collect(Collectors.toList());
   }
@@ -61,6 +68,7 @@ public class Fachada{
 
     if (hechosModelo == null || hechosModelo.isEmpty()) {
       throw new NoSuchElementException("Busqueda no encontrada de: " + nombreColeccion);
+
     }
     return hechosModelo.stream()
         .map(this::convertirADTO)
@@ -68,7 +76,7 @@ public class Fachada{
   }
 
 
-  @Transactional  // Asegura atomicidad: findById y save en una transacción
+  @Transactional
   public void setConsensoStrategy(ConsensoEnum tipoConsenso, String nombreColeccion) {
     // Validaciones iniciales para evitar nulls y datos inválidos
     if (tipoConsenso == null) {
@@ -83,13 +91,9 @@ public class Fachada{
       Coleccion laColeccion;
 
       if (coleccion.isEmpty()) {
-        // Crea nuevo (INSERT)
         laColeccion = new Coleccion(nombreColeccion);
-        // Si necesitas inicializar más campos: laColeccion.setOtroCampo(valorDefault);
       } else {
-        // Usa existente (UPDATE)
         laColeccion = coleccion.get();
-
       }
       laColeccion.setEnumConsenso(tipoConsenso);
       coleccionRepository.save(laColeccion);
