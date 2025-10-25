@@ -28,6 +28,6 @@ public class ConsensoEstricto implements Consenso{
         List<Hecho> hechos = unificador.unificarHechos(coleccion, fuentes);
         Map<Hecho, Boolean> mapHechos = conexion.consultarLote(hechos);
         mapHechos.entrySet().removeIf(entry -> entry.getValue() == true);
-        return new ArrayList<>(mapHechos.keySet());
+        return new ArrayList<>(mapHechos.keySet()).stream().toList();
     }
 }
