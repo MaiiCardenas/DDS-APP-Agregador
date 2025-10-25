@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ar.edu.utn.dds.k3003.model.Coleccion;
+import ar.edu.utn.dds.k3003.model.DTO.MiniHechoDTO;
 import ar.edu.utn.dds.k3003.model.consensos.ConsensoAlMenosDos;
 import ar.edu.utn.dds.k3003.model.consensos.ConsensoEstricto;
 import ar.edu.utn.dds.k3003.model.consensos.ConsensoTodos;
@@ -103,6 +104,19 @@ public class Fachada{
       // Captura errores de BD, JPA, etc. (ej. DataIntegrityViolationException)
       throw new RuntimeException("Error configurando consenso strategy para " + nombreColeccion + ": " + e.getMessage(), e);
     }
+  }
+
+  public void agregarHechoAFuente(MiniHechoDTO miniHecho, String id_fuente){
+    Optional<Fuente> fuente = fuenteRepository.findById(id_fuente);
+    if(fuente.isEmpty()){
+      throw new NoSuchElementException("La fuente no existe.");
+    }
+    try {
+      fuente.get().agregarHecho(miniHecho);
+    }catch(Exception e){
+      throw new RuntimeException("Algo falla en fachada...");
+    }
+
   }
 
 

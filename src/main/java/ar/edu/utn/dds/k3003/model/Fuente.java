@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.model.DTO.HechoDTO;
+import ar.edu.utn.dds.k3003.model.DTO.MiniHechoDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +42,10 @@ public class Fuente {
 
     public List<HechoDTO> obtenerHechos(String coleccionId) {
         return conexionHTTP.obtenerHechosPorColeccion(coleccionId, endpoint);
+    }
+
+    public boolean agregarHecho(MiniHechoDTO miniHecho){
+        return conexionHTTP.agregarHechoAFuente(this.endpoint, miniHecho);
     }
 
     public Fuente(String id, String nombre, String endpoint) {

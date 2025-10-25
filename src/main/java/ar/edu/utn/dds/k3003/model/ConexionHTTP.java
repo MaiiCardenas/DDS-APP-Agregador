@@ -2,13 +2,11 @@ package ar.edu.utn.dds.k3003.model;
 
 import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.model.DTO.HechoDTO;
+import ar.edu.utn.dds.k3003.model.DTO.MiniHechoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
@@ -30,8 +28,54 @@ public class ConexionHTTP {
         this.restTemplate = restTemplate;
     }
 
+    public boolean agregarHechoAFuente(String endpoint, MiniHechoDTO miniHecho) {
+        String url = endpoint.concat("/hecho");
+        logger.info("Iniciando agregarHechoAFuente: url={}, miniHecho={}", url, miniHecho);
+        if (url == null || url.isBlank() || miniHecho == null) {
+            logger.warn("URL o MiniHecho inválido");
+            return false;
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<MiniHechoDTO> entity = new HttpEntity<>(miniHecho, headers);
+        final int maxAttempts = 3;
+        final long baseDelayMs = 1000;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                ResponseEntity<Void> response = restTemplate.exchange(
+                        url, HttpMethod.POST, entity, Void.class
+                );
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    logger.info("Hecho agregado exitosamente a la fuente: {}", url);
+                    return true;
+                } else {
+                    logger.warn("HTTP {} al agregar hecho a {}", response.getStatusCode(), url);
+                    return false;
+                }
+            } catch (HttpStatusCodeException e) {
+                if (e.getStatusCode().value() == 429 && attempt < maxAttempts) {
+                    long waitMs = resolveWaitMsFromRetryAfter(e.getResponseHeaders(), baseDelayMs, attempt);
+                    logger.warn("HTTP 429 (intento {}/{}). Reintentando en {} ms. Body: {}",
+                            attempt, maxAttempts, waitMs, e.getResponseBodyAsString());
+                    sleepSilently(waitMs);
+                    continue;
+                }
+                logger.error("HTTP {} al agregar hecho a {}. Body: {}", e.getStatusCode(), url, e.getResponseBodyAsString(), e);
+                return false;
+            } catch (RestClientException e) {
+                logger.error("Error RestTemplate al agregar a {}: {}", url, e.getMessage(), e);
+                return false;
+            } catch (Exception e) {
+                logger.error("Error inesperado en agregarHechoAFuente: {}", e.getMessage(), e);
+                return false;
+            }
+        }
+        logger.error("Agotados {} intentos por 429 al agregar hecho a {}", maxAttempts, url);
+        return false;
+    }
 
-    public Map<Hecho, Boolean> consultarLote(List<Hecho> listaHechos) {
+
+        public Map<Hecho, Boolean> consultarLote(List<Hecho> listaHechos) {
         logger.info("Iniciando consultarLote con {} hechos", listaHechos != null ? listaHechos.size() : 0);
         if (listaHechos == null || listaHechos.isEmpty()) {
             logger.warn("Lista de hechos vacía o nula");
