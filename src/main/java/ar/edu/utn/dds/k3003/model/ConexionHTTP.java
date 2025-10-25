@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.model;
 
+import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.model.DTO.HechoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -26,6 +29,91 @@ public class ConexionHTTP {
     public ConexionHTTP(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
+
+
+    public Map<Hecho, Boolean> consultarLote(List<Hecho> listaHechos) {
+        logger.info("Iniciando consultarLote con {} hechos", listaHechos != null ? listaHechos.size() : 0);
+        if (listaHechos == null || listaHechos.isEmpty()) {
+            logger.warn("Lista de hechos vacía o nula");
+            return Map.of();
+        }
+        Map<Hecho, Boolean> resultados = new HashMap<>();
+        final long delayMs = 1000;  // Delay de 1s entre consultas; ajusta según API (ej. 2000 para más cautela)
+        for (Hecho hecho : listaHechos) {
+            try {
+                boolean tiene = this.tieneSolicitud(hecho);  // Llama al método existente
+                resultados.put(hecho, tiene);
+                logger.debug("Procesado hecho {}: tieneSolicitud={}", hecho.getId(), tiene);
+                // Delay para evitar 429, excepto en la última iteración
+                if (!hecho.equals(listaHechos.get(listaHechos.size() - 1))) {
+                    sleepSilently(delayMs);
+                }
+            } catch (Exception e) {
+                logger.error("Error al procesar hecho {} en lote: {}", hecho.getId(), e.getMessage(), e);
+                resultados.put(hecho, false);  // Asume false en error, o maneja como prefieras
+            }
+        }
+        logger.info("Completado consultarLote: procesados {} hechos", resultados.size());
+        return resultados;
+    }
+
+    private boolean tieneSolicitud(Hecho hecho) {
+        logger.info("Iniciando tieneSolicitud: hechoId={}", hecho != null ? hecho.getId() : "null");
+
+        if (hecho == null || hecho.getId() == null) {
+            logger.warn("Hecho inválido o nulo");
+            return false;
+        }
+
+        String url = "https://dds-app-solicitud.onrender.com/api/solicitudes?hecho=" + hecho.getId();
+        logger.info("Consultando solicitudes para hecho {} en: {}", hecho.getId(), url);
+
+        HttpHeaders headers = new HttpHeaders(); // El interceptor añade User-Agent y Accept si es necesario
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        final int maxAttempts = 3;
+        final long baseDelayMs = 1000; // 1s
+
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                ResponseEntity<SolicitudDTO[]> response = restTemplate.exchange(
+                        url, HttpMethod.GET, entity, SolicitudDTO[].class
+                );
+
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    logger.warn("HTTP {} al consultar solicitudes para hecho {}", response.getStatusCode(), hecho.getId());
+                    return false; // O podrías reintentar en otros códigos, pero aquí asumimos no
+                }
+
+                SolicitudDTO[] solicitudes = response.getBody();
+                boolean tiene = (solicitudes != null && solicitudes.length > 0);
+                logger.info("Hecho {} tiene solicitudes: {}", hecho.getId(), tiene);
+                return tiene;
+
+            } catch (HttpStatusCodeException e) {
+                if (e.getStatusCode().value() == 429 && attempt < maxAttempts) {
+                    long waitMs = resolveWaitMsFromRetryAfter(e.getResponseHeaders(), baseDelayMs, attempt);
+                    logger.warn("HTTP 429 (intento {}/{}). Reintentando en {} ms para hecho {}. Body: {}",
+                            attempt, maxAttempts, waitMs, hecho.getId(), e.getResponseBodyAsString());
+                    sleepSilently(waitMs);
+                    continue;
+                }
+                logger.error("HTTP {} al consultar solicitudes para hecho {}. Body: {}",
+                        e.getStatusCode(), hecho.getId(), e.getResponseBodyAsString(), e);
+                return false;
+            } catch (RestClientException e) {
+                logger.error("Error RestTemplate al consultar {}: {}", url, e.getMessage(), e);
+                return false;
+            } catch (Exception e) {
+                logger.error("Error inesperado en tieneSolicitud: {}", e.getMessage(), e);
+                return false;
+            }
+        }
+
+        logger.error("Agotados {} intentos por 429 al consultar solicitudes para hecho {}", maxAttempts, hecho.getId());
+        return false;
+    }
+
 
     public List<HechoDTO> obtenerHechosPorColeccion(String nombreColeccion, String endpoint) {
         logger.info("Iniciando obtenerHechosPorColeccion: nombreColeccion={}, endpoint={}", nombreColeccion, endpoint);
